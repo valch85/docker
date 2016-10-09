@@ -1,0 +1,31 @@
+namespace: blog
+containers:
+  nginx_for_blog:
+    image: nginx:mine
+    state: running
+    volumes_from:
+      - php_for_blog
+    links:
+      - php_for_blog:php
+      - mysql_for_blog:mysql
+    ports:
+      - 80:80
+
+  php_for_blog:
+    image: php:mine
+    state: running
+    links:
+      - mysql_for_blog:mysql
+    volumes:
+      - /var/www/
+
+  mysql_for_blog:
+    image: mysql:5.6
+    env: 
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: 1234
+    state: running
+    ports:
+      - 3306
