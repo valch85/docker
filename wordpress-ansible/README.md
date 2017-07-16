@@ -28,7 +28,8 @@ where blog.site.com - site name; aqwe123 - mysql password
 
 - connect to server and run commands to start:
 ```cd /root/blog/
-docker-compose up -d```
+docker-compose up -d
+```
 
 
 To use ssl on site
