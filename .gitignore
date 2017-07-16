@@ -61,4 +61,4 @@ $RECYCLE.BIN/
 
 # ansible
 *.retry
-host.list
+wordpress-ansible/host.list

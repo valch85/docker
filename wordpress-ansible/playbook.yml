@@ -62,12 +62,12 @@
         - /root/blog/db-data
         - /root/blog/wordpress/.well-known
   
-    - name: deploy docker-engine dropin
-      copy:
-        src=./ansible/systemd/docker.dropin
-        dest=/etc/systemd/system/docker.service.d/local.conf
-        owner=root
-        mode=0766
+#    - name: deploy docker-engine dropin
+#      copy:
+#        src=./ansible/systemd/docker.dropin
+#        dest=/etc/systemd/system/docker.service.d/local.conf
+#        owner=root
+#        mode=0766
   
     - name: install docker
       apt:

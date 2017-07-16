@@ -12,12 +12,14 @@ Use
 
 - put server IP and credentials to hosts.list file
 Example:
-```[default]
+```
+[default]
 ip_address
 
 [default:vars]
 ansible_user=root
-ansible_ssh_private_key_file=path_to_privat_key```
+ansible_ssh_private_key_file=path_to_privat_key
+```
 
 - run command:
 ```ansible-playbook -i host.list --extra-vars="sitename=blog.site.com mysqlpass=aqwe123" playbook.yml```
