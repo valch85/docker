@@ -1,4 +1,4 @@
-#wordpress-ansible
+# wordpress-ansible
 
 ansible playbook that install and coppy all nessesary files to bring up Wordpress blog in Docker on Ubuntu 16.04 host.
 
