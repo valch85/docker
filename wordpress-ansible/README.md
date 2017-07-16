@@ -10,7 +10,7 @@ install ansible
 Use
 ----
 
-` put server IP and credentials to hosts.list file
+- put server IP and credentials to hosts.list file
 Example:
 ```[default]
 ip_address

@@ -58,3 +58,7 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# ansible
+*.retry
+host.list
