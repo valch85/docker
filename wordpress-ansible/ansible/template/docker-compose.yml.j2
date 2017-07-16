@@ -1,0 +1,35 @@
+nginx:
+    build: ./nginx
+    container_name: blog_nginx
+    ports:
+        - '80:80'
+        - '443:443'
+    volumes:
+        - ./wordpress:/var/www/blog
+        - ./nginx/ssl:/etc/nginx/ssl
+    links:
+        - wordpress
+    restart: always
+mysql:
+    image: mariadb
+    ports:
+        - '3306:3306'
+    volumes:
+        - ./db-data:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD={{ mysqlpass }}
+    restart: always
+wordpress:
+    image: wordpress:4.7.1-php7.0-fpm-alpine
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./wordpress:/var/www/blog
+    environment:
+        - WORDPRESS_DB_NAME=blog
+        - WORDPRESS_TABLE_PREFIX=wp_
+        - WORDPRESS_DB_HOST=mysql
+        - WORDPRESS_DB_PASSWORD={{ mysqlpass }}
+    links:
+        - mysql
+    restart: always

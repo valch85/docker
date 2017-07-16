@@ -1,0 +1,107 @@
+- hosts: default
+  gather_facts: no
+  user: "{{ user|default('root') }}"
+  become: true
+  become_method: sudo
+  pre_tasks:
+    - name: make sure we have proper python
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: False
+
+  tasks:
+    - name: set locale
+      command: /usr/sbin/update-locale LANG=en_US.UTF-8 LC_ALL=
+  
+    - name: set keyboard
+      command: /usr/bin/loadkeys us
+  
+    - name: set timezone
+      timezone: name=US/Pacific
+
+    - name: Add Docker repository key
+      apt_key:
+        id: "58118E89F3A912897C070ADBF76221572C52609D"
+        keyserver: "hkp://p80.pool.sks-keyservers.net:80"
+        state: present
+  
+    - name: Add Docker repository and update apt cache
+      apt_repository:
+        repo: "deb https://apt.dockerproject.org/repo ubuntu-xenial main"
+        update_cache: yes
+        state: present
+    
+    - name: Add Certbot repository and update apt cache
+      apt_repository:
+        repo: 'ppa:certbot/certbot'
+        update_cache: yes
+        state: present
+
+    - include: "{{ included_playbook }}"
+      with_first_found:
+        - files:
+          - ./ansible/install_packets.yml
+          skip: true
+      loop_control:
+        loop_var: included_playbook
+  
+    - name: insure ntp enabled on boot and running
+      service: name=ntp enabled=yes state=started
+
+    - name: create folders
+      file: name={{item}} state=directory
+      with_items:
+        - /root/blog
+        - /etc/docker-compose
+        - /root/.docker
+        - /usr/local/var
+        - /var/lib
+        - /var/log/containers
+        - /opt/docker-updater
+        - /etc/systemd/system/docker.service.d
+        - /root/blog/wordpress
+        - /root/blog/db-data
+        - /root/blog/wordpress/.well-known
+  
+    - name: deploy docker-engine dropin
+      copy:
+        src=./ansible/systemd/docker.dropin
+        dest=/etc/systemd/system/docker.service.d/local.conf
+        owner=root
+        mode=0766
+  
+    - name: install docker
+      apt:
+        pkg: "docker-engine={{ docker_version | default('*') }}"
+        state: installed
+  
+    - name: install docker-compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.13.0/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        checksum: sha256:0d8af4d3336b0b41361c06ff213be5c42e2247beb746dbc597803e862af127e8
+        owner: root
+        mode: 0755
+    
+    - name: copy blog files
+      copy:
+        src=./wordpress-data/{{item}}
+        dest=/root/blog
+        owner=root
+        mode=0755
+      with_items:
+        - db-data
+        - nginx
+        - wordpress
+        - docker-compose.yml
+      tags:
+        - copyfiles
+
+    - name: copy blog template
+      template: src="./ansible/template/blog.j2" dest="/root/blog/nginx/config/blog"
+      tags:
+        - copyblogtemplates 
+
+    - name: copy compose template
+      template: src="./ansible/template/docker-compose.yml.j2" dest="/root/blog/docker-compose.yml"
+      tags:
+        - copycomposetemplates 

@@ -1,0 +1,79 @@
+server {
+    listen 80;
+    server_name {{ sitename }};
+    return 301 https://$host$request_uri;
+    access_log /var/log/nginx/access.log logs_json;
+}
+
+server {
+        listen 443 ssl;
+        server_name {{ sitename }};
+        access_log /var/log/nginx/access.log logs_json;
+        error_log /var/log/nginx/error.log;
+
+        #for certbot (letsencrypt)
+        location ~ /.well-known {
+            allow all;
+        }
+
+        # specifies a file with the certificate in the PEM format for the given virtual server.
+        ssl_certificate      /etc/nginx/ssl/fullchain.pem;
+
+        # specifies a file with the secret key in the PEM format for the given virtual server.
+        ssl_certificate_key  /etc/nginx/ssl/privkey.pem;
+
+        # specifies that server ciphers should be preferred over client ciphers when using the SSLv3 and TLS protocols.
+        ssl_prefer_server_ciphers   on;
+
+        # specifies a time during which a client may reuse the session parameters stored in a cache.
+        ssl_session_timeout 1d;
+
+        # sets the types and sizes of caches that store session parameters.
+        ssl_session_cache shared:SSL:50m;
+
+        # enables or disables session resumption through TLS session tickets.
+        ssl_session_tickets off;
+
+        # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits.
+        ssl_dhparam  /etc/nginx/ssl/dhparams.pem;
+
+        # enables the specified protocols.
+        ssl_protocols TLSv1.2;
+
+        # specifies the enabled ciphers. The ciphers are specified in the format understood by the OpenSSL library.
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
+
+        gzip on;
+        gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        root /var/www/blog/;
+        index index.php;
+
+        location ~ /\. {
+                deny all;
+        }
+
+        location ~* /(?:uploads|files)/.*\.php$ {
+                deny all;
+        }
+
+        location ~* ^.+\.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
+                access_log off; log_not_found off; expires max;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php?$args; # permalinks
+        }
+
+        location ~ \.php$ {
+                fastcgi_pass blog_wordpress_1:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        }
+
+        location = /50x.html {
+                root /usr/share/nginx/html;
+        }
+}

@@ -1,0 +1,29 @@
+    - name: Make sure apt-transport-https is installed
+      apt:
+        pkg: "apt-transport-https"
+        state: installed
+
+    - name: install ntp
+      apt: name=ntp state=installed
+
+    - name: install htop
+      apt: name=htop state=installed
+
+    - name: install mc
+      apt: name=mc state=installed
+
+    - name: install ncdu
+      apt: name=ncdu state=installed
+
+    - name: install vim
+      apt: name=vim state=installed
+
+    - name: install software-properties-common
+      apt: name=software-properties-common state=installed
+
+#   - name: install python-certbot-nginx
+#     apt: name=python-certbot-nginx state=installed
+
+#   - name: install aptitude
+#     apt: name=aptitude state=installed
+      
