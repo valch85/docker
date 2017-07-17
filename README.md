@@ -1,2 +1,2 @@
 # docker
-repo files useful to run docker containers 
+useful docker & docker-compose files
