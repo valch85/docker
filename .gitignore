@@ -2,6 +2,7 @@ wordpress-from-compose/wp-app
 wordpress-from-compose/wp-data
 my-wordpress/wp-app
 my-wordpress/wp-data
+mediawiki/db-data
 
 .gitignore
 *.log
