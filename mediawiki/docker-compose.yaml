@@ -1,0 +1,42 @@
+# MediaWiki with MariaDB
+version: '3'
+services:
+  mediawiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - my-network-name
+    volumes:
+      - /var/www/html/images
+      # apache config for mediawiki
+      - ./000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      # After initial setup, download LocalSettings.php to the same directory as
+      # this yaml and uncomment the following line and use compose to restart
+      # the mediawiki service
+      #- ./LocalSettings.php:/var/www/html/LocalSettings.php
+      # certificates
+      - ./certs/example.com.key:/etc/ssl/mediawiki.site.name.key
+      - ./certs/example.com.crt:/etc/ssl/mediawiki.site.name.crt
+  database:
+    image: mariadb
+    volumes:
+      - ./db-data:/var/lib/mysql
+    restart: always
+    networks:
+      - my-network-name
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: my_wiki
+      MYSQL_USER: wikiuser
+      MYSQL_PASSWORD: example
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+
+networks:
+  my-network-name:
