@@ -1,2 +1,2 @@
 # docker
-useful docker & docker-compose files
+useful docker & docker-compose projects
