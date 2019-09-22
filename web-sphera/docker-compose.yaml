@@ -1,0 +1,25 @@
+version: '2'
+services:
+  was:
+    depends_on:
+      - db
+    build: "."
+    links:
+      - db
+    ports:
+      - "9080:9080"
+      - "9043:9043"
+      - "9443:9443"
+    volumes:
+      - "./was:/opt/backbase"
+    restart: always
+  
+  db:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql:/opt
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mynewpassword 
