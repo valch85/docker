@@ -1,8 +1,10 @@
-# MediaWiki 
-MediaWiki runs with docker-compose (SSL enabled)
+# myip_server
+Python base web-server that show requester IP.
 
-to start project run `docker-compose up .` in the directory
+`X-Forwarded-For` should be pass if run after ther proxy.
 
-- during the setup process using a server name `database` instead of `localhost`
-- after initial setup, download `LocalSettings.php` to the same directory as this .yaml and uncomment the following line and use docker-compose to restart the MediaWiki service
-- replace certs with your own
+**to run:**
+`docker run -d -p 80:8081 --name myip-server valch85/myip_server`
+or use `myipserver.service` file.
+
+
